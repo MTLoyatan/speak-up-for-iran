@@ -35,8 +35,18 @@
     margin-bottom: 14px;
     letter-spacing: 0.03em;
   }
-  h1 { font-size: 26px; font-weight: 700; margin-bottom: 10px; color: #111; }
-  .subtitle { font-size: 15px; color: #555; line-height: 1.65; margin-bottom: 2rem; }
+  h1 {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #111;
+  }
+  .subtitle {
+    font-size: 15px;
+    color: #555;
+    line-height: 1.65;
+    margin-bottom: 2rem;
+  }
   .section {
     background: #fafaf8;
     border: 1px solid #e8e6e0;
@@ -52,28 +62,41 @@
     color: #888;
     margin-bottom: 10px;
   }
+  .recipients {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .recipient-tag {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 12px;
+    color: #444;
+  }
   .subject-line {
     font-weight: 600;
     font-size: 14px;
-    color: #aaa;
-    font-style: italic;
+    color: #222;
     margin-bottom: 10px;
-    min-height: 20px;
   }
-  .divider { border: none; border-top: 1px solid #eee; margin: 10px 0 14px; }
+  .divider {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 10px 0 14px;
+  }
   .body-preview {
     font-size: 14px;
-    color: #aaa;
-    font-style: italic;
+    color: #333;
     line-height: 1.75;
     white-space: pre-wrap;
     background: #fff;
     border: 1px solid #eee;
     border-radius: 8px;
     padding: 1rem 1.2rem;
-    max-height: 300px;
+    max-height: 280px;
     overflow-y: auto;
-    min-height: 100px;
   }
   .btn-refresh {
     display: flex;
@@ -89,8 +112,7 @@
     cursor: pointer;
     transition: background 0.15s;
   }
-  .btn-refresh:hover:not(:disabled) { background: #f0eeea; }
-  .btn-refresh:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-refresh:hover { background: #f0eeea; }
   .btn-send {
     display: flex;
     align-items: center;
@@ -110,161 +132,151 @@
     transition: background 0.15s;
   }
   .btn-send:hover { background: #991b1b; }
-  .btn-send.disabled { background: #ccc; cursor: not-allowed; pointer-events: none; }
-  .note { font-size: 12px; color: #999; text-align: center; line-height: 1.5; }
-  .loading-state { display: flex; align-items: center; gap: 10px; color: #888; font-size: 14px; padding: 0.75rem 0; }
-  .spinner {
-    width: 18px; height: 18px;
-    border: 2px solid #e0e0e0;
-    border-top-color: #b91c1c;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    flex-shrink: 0;
+  .note {
+    font-size: 12px;
+    color: #999;
+    text-align: center;
+    line-height: 1.5;
   }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .error-msg {
+  .count-pill {
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 20px;
+    margin-left: 6px;
+  }
+  .meta-row {
+    display: flex;
+    align-items: center;
     font-size: 13px;
-    color: #b91c1c;
-    background: #fde8e8;
-    border-radius: 8px;
-    padding: 8px 12px;
-    margin-top: 8px;
+    color: #666;
+    margin-bottom: 10px;
   }
 </style>
 </head>
 <body>
 <div class="card">
-
   <div class="badge">⚠ Urgent — Human Rights Action</div>
   <h1>Speak Up for Iran</h1>
   <p class="subtitle">
-    An AI generates a unique message every time. Review it below, then send it to all 15 London City Council members in one tap.
+    Click the button below to open your email app with a pre-written message to London City Council, urging them to condemn the ongoing execution of Iranian protesters in sham trials and the prolonged internet blackout in Iran.
   </p>
 
-  <!-- Message preview -->
   <div class="section">
-    <div class="section-label">Your AI-generated message</div>
-    <div class="subject-line" id="subject-preview">Generating your message...</div>
-    <hr class="divider">
-    <div class="body-preview" id="body-preview">Please wait...</div>
-
-    <div id="loading-indicator" style="display:none;">
-      <div class="loading-state">
-        <div class="spinner"></div>
-        <span id="loading-text">AI is writing your message...</span>
-      </div>
+    <div class="section-label">Recipients</div>
+    <div class="meta-row">
+      To: <span class="count-pill">15 council members</span>
     </div>
+    <div class="recipients" id="recipients-display"></div>
+  </div>
 
-    <div id="error-container"></div>
-
-    <button class="btn-refresh" id="btn-refresh" onclick="generateMessage()" disabled>
-      ✦ Generate new message
+  <div class="section">
+    <div class="section-label">Your message preview</div>
+    <div class="subject-line" id="subject-preview"></div>
+    <hr class="divider">
+    <div class="body-preview" id="body-preview"></div>
+    <button class="btn-refresh" onclick="refreshMessage()">
+      ↻ Generate different wording
     </button>
   </div>
 
-  <!-- Send button -->
-  <a class="btn-send disabled" id="mailto-link" href="#">
+  <a class="btn-send" id="mailto-link" href="#">
     ✉ Open in my email app &amp; send
   </a>
   <p class="note">
-    Your email client opens with all 15 council members and the message pre-filled.<br>
+    Your email client will open with all recipients and the message pre-filled.<br>
     You can review and edit before sending.
   </p>
-
-  <!-- Hidden — used only to build mailto link -->
-  <div id="recipients-display" style="display:none;"></div>
-
 </div>
 
 <script>
-  // ---------------------------------------------------------------
-  // Paste your Cloudflare Worker URL here (ends in .workers.dev)
-  // ---------------------------------------------------------------
-  const WORKER_URL = "https://iran-action-proxy.iran-e-azad.workers.dev/";
-  // ---------------------------------------------------------------
+const recipients = [
+  "shillier@london.ca","dferreira@london.ca","epeloza@london.ca","sfranke@london.ca",
+  "pvanmeerbergen@london.ca","ahopkins@london.ca","slehman@london.ca","crahman@london.ca",
+  "strosow@london.ca","jpribil@london.ca","sstevenson@london.ca","pcuddy@london.ca",
+  "slewis@london.ca","hmcalister@london.ca","mayor@london.ca"
+];
 
-  const recipients = [
-    "shillier@london.ca","dferreira@london.ca","epeloza@london.ca","sfranke@london.ca",
-    "pvanmeerbergen@london.ca","ahopkins@london.ca","slehman@london.ca","crahman@london.ca",
-    "strosow@london.ca","jpribil@london.ca","sstevenson@london.ca","pcuddy@london.ca",
-    "slewis@london.ca","hmcalister@london.ca","mayor@london.ca"
-  ];
+const subjects = [
+  "Urgent appeal: condemn Iran's execution of protesters and internet shutdown",
+  "Call to action: speak out against Iran's sham trials and communication blackout",
+  "Please take a stand — Iran is executing protesters and silencing its people",
+  "Request for your public condemnation of Iran's crackdown on protesters",
+  "Human rights crisis in Iran: executions, sham trials, and a two-month internet blackout",
+  "I urge you to condemn Iran's execution of protesters under false charges",
+  "Stand with the people of Iran — executions and internet censorship must be condemned",
+  "Voices silenced in Iran: your condemnation is urgently needed",
+  "Iranian protesters are being executed — please add your voice to the condemnation",
+  "The world must speak: Iran's government is executing protesters and blocking the internet",
+];
 
-  const loadingMessages = [
-    "AI is writing your message...",
-    "Crafting a unique appeal...",
-    "Composing your letter...",
-    "Generating fresh wording...",
-    "Finding the right words...",
-  ];
+const openings = [
+  "I am writing to you as a concerned resident to urge you to take a public stand on a grave human rights crisis unfolding in Iran.",
+  "As a member of our community who believes in justice and human dignity, I respectfully ask you to speak out against the ongoing atrocities in Iran.",
+  "I reach out to you today with deep concern about the systematic brutality the Iranian government is inflicting on its own people.",
+  "I am contacting you on behalf of those who no longer have a voice — the protesters in Iran who are being silenced, imprisoned, and executed.",
+  "The situation in Iran demands international attention and moral clarity, and I believe our elected representatives have a responsibility to respond.",
+  "As a constituent, I am appealing to you to use your platform to condemn a human rights catastrophe that has been ongoing for over two months in Iran.",
+  "I write to you today with a sense of urgency and moral obligation regarding the violent crackdown on protesters taking place in Iran.",
+];
 
-  function setLoading(on) {
-    document.getElementById("loading-indicator").style.display = on ? "block" : "none";
-    document.getElementById("btn-refresh").disabled = on;
-    document.getElementById("error-container").innerHTML = "";
-    document.getElementById("loading-text").textContent =
-      loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
-  }
+const bodies = [
+  `Since the latest wave of protests began, the Iranian government has been carrying out executions of protesters following trials that international legal observers have widely condemned as shams — rushed proceedings with no meaningful legal representation, forced confessions, and predetermined verdicts. These are not judicial processes; they are state-sanctioned killings designed to intimidate a population demanding basic rights.\n\nCompounding this horror, Iranian authorities have imposed a near-total internet blackout lasting more than two months. This deliberate communication blackout is not incidental — it is a tool of repression, designed to prevent the outside world from witnessing what is happening, and to prevent Iranians from organizing, documenting abuse, or calling for help.\n\nI urge you to issue a clear public condemnation of these executions and this communications shutdown, and to join other elected officials in calling on the Iranian government to immediately halt executions, release political prisoners, and restore free internet access to its people.`,
 
-  function showError(msg) {
-    document.getElementById("error-container").innerHTML =
-      '<div class="error-msg">⚠ ' + msg + '</div>';
-  }
+  `Over recent months, the Iranian government has systematically executed protesters who participated in nationwide demonstrations. These individuals were convicted in deeply flawed judicial proceedings — closed hearings, fabricated charges, and confessions extracted under duress. Human rights organizations across the world have denounced these as sham trials, yet the executions continue.\n\nAt the same time, the regime has maintained a suffocating internet blockade now lasting over two months. Iranians have been cut off from the world and from each other. This blackout is not a technical failure — it is a calculated policy to crush dissent and hide evidence of state violence.\n\nI am asking you, as my representative, to speak out publicly and unequivocally: condemn the executions, condemn the internet shutdown, and call for the international community to hold Iran's government accountable for these crimes against its own citizens.`,
 
-  function updateMailtoLink(subject, body) {
-    const to = recipients.join(",");
-    const link = "mailto:" + to
-      + "?subject=" + encodeURIComponent(subject)
-      + "&body=" + encodeURIComponent(body);
-    const btn = document.getElementById("mailto-link");
-    btn.href = link;
-    btn.classList.remove("disabled");
-  }
+  `The Iranian regime is executing protesters. This is not a matter of dispute — it is documented by human rights organizations, verified by journalists, and confirmed by the families of the victims. These young men and women participated in protests calling for dignity and freedom. For this, they were tried in secretive courts, denied proper legal counsel, and put to death.\n\nFor more than two months, the regime has also maintained a near-complete block on internet access across the country. This is collective punishment — an attempt to isolate a population, prevent documentation of abuses, and silence the global outcry that would otherwise grow louder.\n\nI am writing to ask that you add your voice to those condemning these actions. A public statement from elected officials like yourself sends a message to both the Iranian government and the international community that these abuses will not be ignored or normalized.`,
 
-  async function generateMessage() {
-    setLoading(true);
+  `What is happening in Iran is a humanitarian crisis driven by deliberate government policy. Protesters — many of them students and young people — have been arrested, subjected to show trials condemned by legal experts worldwide, and executed. The pace of these executions is alarming, and the international response must match that urgency.\n\nAdding to the crisis, Iran's government has imposed an internet blackout exceeding two months in duration. This is one of the longest sustained internet shutdowns in recent history. It denies Iranians the ability to communicate with the world, document human rights abuses, or seek solidarity from the international community.\n\nI respectfully ask that you use your public role to condemn these actions clearly and loudly. The people of Iran are looking to the democratic world for support. Your voice matters — please use it.`,
 
-    try {
-      const response = await fetch(WORKER_URL, { method: "POST" });
+  `I am reaching out with an urgent request: please publicly condemn the Iranian government's execution of protesters and the prolonged internet blackout that has now entered its third month.\n\nThese protesters were not criminals. They were citizens exercising a fundamental human right — the right to peaceful assembly and free expression. The trials used to sentence them to death have been condemned by the United Nations and major human rights organizations as deeply unfair and politically motivated. Execution is being used as a tool of political repression.\n\nThe internet shutdown, running alongside these executions, is designed to ensure that the world does not see what is happening. It is a strategy of darkness — and the only antidote is the international spotlight. A public statement from you and your colleagues condemning both the executions and the communications blackout would contribute meaningfully to that effort.`,
 
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        showError(err.error || "Something went wrong. Please try again.");
-        setLoading(false);
-        return;
-      }
+  `Innocent people are being executed in Iran. Protesters who took to the streets to demand freedom, dignity, and accountability are being put on trial in proceedings that bear no resemblance to a fair legal process — and then killed. The international community has spoken clearly: these are sham trials. Yet without sufficient political pressure, they continue.\n\nSimultaneously, the Iranian government has cut its population off from the internet for over two months. This is not a side issue — it is an integral part of the crackdown. By severing communications, the regime prevents Iranians from organizing resistance, sharing evidence of abuse, or reaching out to the world.\n\nAs an elected official in a democratic society, you have both the platform and the moral standing to speak out. I urge you in the strongest possible terms to publicly condemn these executions and the internet blockade, and to support any international efforts to hold those responsible to account.`,
+];
 
-      const parsed = await response.json();
-      const subject = parsed.subject || "Urgent: Please condemn executions and internet blackout in Iran";
-      const body = parsed.body || "";
+const closings = [
+  "Thank you for your time and for your commitment to human rights. I hope to hear that you have taken a stand on this issue.",
+  "I sincerely thank you for reading this message and for considering this appeal. The people of Iran need us to be their voice.",
+  "I appreciate your attention to this urgent matter and look forward to your response. History will remember those who spoke up.",
+  "Thank you for your service to our community. I trust you will lend your voice to those who have had theirs taken away.",
+  "With respect and urgency, I thank you for reading this appeal and hope you will act on it swiftly.",
+  "I am grateful for your attention. Please know that speaking out costs little but means everything to those living through this nightmare.",
+];
 
-      const subjectEl = document.getElementById("subject-preview");
-      subjectEl.textContent = "Subject: " + subject;
-      subjectEl.style.color = "#222";
-      subjectEl.style.fontStyle = "normal";
-      subjectEl.style.fontWeight = "600";
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-      const bodyEl = document.getElementById("body-preview");
-      bodyEl.textContent = body;
-      bodyEl.style.color = "#333";
-      bodyEl.style.fontStyle = "normal";
+function generate() {
+  const subject = pick(subjects);
+  const body = pick(openings) + "\n\n" + pick(bodies) + "\n\n" + pick(closings) + "\n\n— A concerned resident of London, Ontario";
+  return { subject, body };
+}
 
-      document.getElementById("btn-refresh").disabled = false;
-      updateMailtoLink(subject, body);
+function updateLink(subject, body) {
+  const to = recipients.join(",");
+  const link = "mailto:" + to + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  document.getElementById("mailto-link").href = link;
+}
 
-    } catch (e) {
-      showError("Network error — make sure you are connected to the internet and try again.");
-    }
+function renderRecipients() {
+  const el = document.getElementById("recipients-display");
+  el.innerHTML = recipients.map(function(r) {
+    return '<span class="recipient-tag">' + r + '</span>';
+  }).join("");
+}
 
-    setLoading(false);
-  }
+var current = {};
 
-  // Build recipients (hidden, for mailto only)
-  document.getElementById("recipients-display").innerHTML =
-    recipients.map(r => '<span>' + r + '</span>').join("");
+function refreshMessage() {
+  current = generate();
+  document.getElementById("subject-preview").textContent = "Subject: " + current.subject;
+  document.getElementById("body-preview").textContent = current.body;
+  updateLink(current.subject, current.body);
+}
 
-  // Auto-generate on page load
-  generateMessage();
+renderRecipients();
+refreshMessage();
 </script>
 </body>
 </html>
